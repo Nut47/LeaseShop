@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.BillMapper">
+
+    <insert id="add" parameterType="com.entity.Bill"> insert into bill(billid, userid, commodityname, commodityphoto,number,commoditydes,leaseTerm,deposit,totalprice,state,address,stateBuy)values (#{billid},#{userid},#{commodityname},#{commodityphoto},#{number},#{commoditydes},#{leaseterm},#{deposit},#{totalprice},#{state},null,#{stateBuy}) </insert>
+
+    <select id="getList" resultType="com.entity.Bill"> select * from bill where userid=(#{userid}) </select>
+
+    <delete id="delete" parameterType="com.entity.Bill"> delete from bill where billid=(#{billid}) </delete>
+
+    <update id="updateState" parameterType="com.entity.Bill"> update bill set stateBuy = (#{arg0}) where billid = (#{arg1}) </update>
+
+    <update id="renewal" parameterType="com.entity.Bill"> update bill set number = (#{number}),leaseTerm = (#{leaseterm}) where billid = (#{billid}) </update>
+
+    <select id="getUserAddress" resultType="com.entity.Bill">select address from bill where userid=(#{userid})</select>
+
+    <update id="updateAddress" parameterType="com.entity.Bill"> update bill set address = (#{arg0}) where billid = (#{arg1}) </update>
+
+    <insert id="addAddress" parameterType="com.entity.Bill">insert into user_address(userid, address)values (#{userid},#{addresss})</insert>
+
+
+</mapper>

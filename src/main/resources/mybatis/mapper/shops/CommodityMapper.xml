@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.CommodityMapper">
+
+    <insert id="InsertCommodity" parameterType="com.entity.Commodity">
+        insert into commodity (commid,commname,commdesc,videourl,orimoney,thinkmoney,school,common,category,image,userid) value
+        (#{commid},#{commname},#{commdesc},#{videourl},#{orimoney},#{thinkmoney},#{school},#{common},#{category},#{image},#{userid})
+    </insert>
+
+    <select id="LookCommodity" resultType="com.entity.Commodity" parameterType="com.entity.Commodity">
+        select commid,commname,commdesc,videourl,orimoney,thinkmoney,school,createtime,commstatus,common,rednumber,category,image,userid from commodity
+        where commid=#{commid}
+    </select>
+
+    <update id="ChangeCommodity" parameterType="com.entity.Commodity">
+        update commodity
+        <set>
+            <if test="commname!=null">
+                commname=#{commname},
+            </if>
+            <if test="commdesc!=null">
+                commdesc=#{commdesc},
+            </if>
+            <if test="videourl!=null">
+                videourl=#{videourl},
+            </if>
+            <if test="orimoney!=null">
+                orimoney=#{orimoney},
+            </if>
+            <if test="thinkmoney!=null">
+                thinkmoney=#{thinkmoney},
+            </if>
+            <if test="rednumber!=null">
+                rednumber=rednumber+1,
+            </if>
+            <if test="common!=null">
+                common=#{common},
+            </if>
+            <if test="category!=null">
+                category=#{category},
+            </if>
+            <if test="image!=null">
+                image=#{image},
+            </if>
+            <if test="updatetime!=null">
+                updatetime=#{updatetime},
+            </if>
+            <if test="commstatus!=null">
+                commstatus=#{commstatus},
+            </if>
+        </set>
+        where commid=#{commid}
+    </update>
+
+    <update id="ChangeCommstatus">
+        update commodity set commstatus=#{commstatus} where commid=#{commid}
+    </update>
+
+    <select id="queryCommodityByName" resultType="com.entity.Commodity">
+        select commid,commname,commdesc,orimoney,thinkmoney,school,updatetime,image
+        from commodity
+        where commname like #{commname} and commstatus=1
+        order by
+        updatetime desc
+        LIMIT #{page},#{count}
+    </select>
+
+    <select id="queryCommodityByNameCount" resultType="java.lang.Integer">
+        select count(*) from commodity where commname like #{commname} and commstatus=1
+    </select>
+
+    <select id="queryAllCommodity" resultType="com.entity.Commodity">
+        select commid,commname,commdesc,updatetime,category,commstatus
+        from commodity
+        <where>
+            <if test="commstatus != null">and commstatus = #{commstatus}</if>
+            <if test="userid != null">and userid = #{userid}</if>
+        </where>
+        order by updatetime desc limit #{page},#{count}
+    </select>
+
+    <select id="queryCommodityCount" resultType="java.lang.Integer">
+        select count(*) from commodity
+        <where>
+            <if test="commstatus != null">and commstatus = #{commstatus}</if>
+            <if test="userid != null">and userid = #{userid}</if>
+        </where>
+    </select>
+
+    <select id="queryCommodityByCategory" resultType="com.entity.Commodity">
+        select commid,commname,commdesc,orimoney,thinkmoney,school,updatetime,image
+        from commodity
+        <where>
+            <if test="category != '全部'">and category = #{category}</if>
+            and commstatus=1
+        </where>
+            order by updatetime desc limit 0,8
+    </select>
+
+    <select id="queryAllCommodityByCategory" resultType="com.entity.Commodity">
+        select commid,commname,orimoney,thinkmoney,school,updatetime,image
+        from commodity
+        <where>
+            <if test="category != '全部'">and category = #{category}</if>
+            <if test="(minmoney != null) and (maxmoney != null)">and thinkmoney between #{minmoney} and #{maxmoney}</if>
+            <if test="area == '附近'">and school != #{school}</if>
+            <if test="area == '本校'">and school = #{school}</if>
+            and commstatus=1
+        </where>
+        order by updatetime desc limit #{page},#{count}
+    </select>
+
+    <select id="queryAllCommodityByCategoryCount" resultType="java.lang.Integer">
+        select count(*) from commodity
+        <where>
+            <if test="category != '全部'">and category = #{category}</if>
+            <if test="minmoney != null">and thinkmoney &gt;= #{minmoney}</if>
+            <if test="maxmoney != null">and thinkmoney &lt;= #{maxmoney}</if>
+            <if test="area == '附近'">and school != #{school}</if>
+            <if test="area == '本校'">and school = #{school}</if>
+            and commstatus=1
+        </where>
+    </select>
+</mapper>

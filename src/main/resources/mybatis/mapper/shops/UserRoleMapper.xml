@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.UserRoleMapper">
+
+    <insert id="InsertUserRole" parameterType="com.entity.UserRole">
+      insert into user_role (userid, roleid, identity) values (#{userid},#{roleid},#{identity})
+    </insert>
+
+    <select id="LookUserRoleId" resultType="java.lang.Integer" parameterType="java.lang.String">
+      select roleid from user_role where userid=#{userid};
+    </select>
+
+   <update id="UpdateUserRole" parameterType="com.entity.UserRole">
+      update user_role set roleid=#{roleid}  where userid=#{userid}
+    </update>
+
+</mapper>

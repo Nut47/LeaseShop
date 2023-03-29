@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.NewsMapper">
+
+    <insert id="insertNews" parameterType="com.entity.News">
+        insert into news (id,newstitle,newsdesc,newscontent,username,image) values (#{id},#{newstitle},#{newsdesc},#{newscontent},#{username},#{image})
+    </insert>
+
+    <update id="delectNews" parameterType="java.lang.String">
+        update news set newsstatus=2 where id=#{id}
+    </update>
+
+    <update id="updateNews" parameterType="com.entity.News">
+        update news
+        <set>
+            <if test="newstitle != null">newstitle = #{newstitle},</if>
+            <if test="newsdesc != null">newsdesc = #{newsdesc},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="newscontent != null">newscontent = #{newscontent},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="queryNewsById" resultType="com.entity.News">
+        select * from news where id=#{id} and newsstatus=1
+    </select>
+
+    <update id="addNewsRednumber" parameterType="java.lang.String">
+        update news set rednumber=rednumber+1 where id=#{id} and newsstatus=1
+    </update>
+
+    <select id="queryNews" resultType="com.entity.News">
+        select * from news where newsstatus=1 order by createtime desc limit 0,3
+    </select>
+
+    <select id="queryAllNews" resultType="com.entity.News">
+        select id,newstitle,image,newsdesc,username,createtime,rednumber from news where newsstatus=1
+        order by createtime desc limit #{page},#{count}
+    </select>
+
+    <select id="LookNewsCount" resultType="java.lang.Integer">
+        select count(*) from news where newsstatus=1
+    </select>
+</mapper>

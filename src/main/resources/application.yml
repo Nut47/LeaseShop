@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  session:
+    timeout: 7200
+spring:
+  thymeleaf:
+    cache: false
+    suffix: .html
+    prefix: classpath:/templates/
+  profiles:
+    active: prod
+alipay:
+  url: https://openapi.alipaydev.com/gateway.do
+  appid: 2021000121615032
+  privateKey:
+  publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqhIPoDeW4XAQGX/frWKfYqaZ0BHZa6mCYLmYpZYRLFdtC3zTX6pe4FLGPF7KpOEwZssUqiv1LcLJGiyUOIj/2HIi0xXdL7vKrlA0BxXbpW4cAPu94grxlnt+ilVIwbH/RtYcLoqcWHHKCARdryC+iCdEBLlq9tmtw8FiLL+gI503YSJRXk2MN7BTN1BD/qCKNyDJgcu3EjxBg2IqwyKew+8FJ+Ex7+qHshYICCdWs57OQalj6BnXj4oeJfuUz5NGmepWyUkrqwegj+VP2BuonoXQzurmrMXTyC8Ve2mscREU6G1EwqrAnBuk+BBj++VYdYEOmLHAeIjk0A5qYqz/ewIDAQAB
+  notifyUrl: http://localhost:8080/notify
+  returnUrl: http://localhost:8080/return

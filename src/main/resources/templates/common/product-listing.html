@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" lang="ch">
+<head>
+    <meta charset="utf-8">
+    <title>商品清单</title>
+    <!-- Fonts-->
+    <link rel="stylesheet" th:href="@{/static/css/fontsgoogleapis.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/font-awesome/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/ps-icon/style.css}">
+    <!-- CSS Library-->
+    <link rel="stylesheet" th:href="@{/static/plugins/bootstrap/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/owl-carousel/assets/owl.carousel.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/jquery-bar-rating/dist/themes/fontawesome-stars.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/slick/slick/slick.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/bootstrap-select/dist/css/bootstrap-select.min.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/Magnific-Popup/dist/magnific-popup.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/jquery-ui/jquery-ui.min.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/revolution/css/settings.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/revolution/css/layers.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/revolution/css/navigation.css}">
+    <!-- Custom-->
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/static/css/style.css}">
+    <script type="text/javascript" th:src="@{/static/js/vue.js}"></script>
+    <script type="text/javascript" th:src="@{/static/plugins/jquery/dist/jquery.min.js}"></script>
+    <script th:src="@{/static/js/html5shiv.js}"></script>
+    <script th:src="@{/static/js/respond.min.js}"></script>
+    <script th:inline="javascript">
+        let basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+        let userid = [[${session.userid}]];
+    </script>
+</head>
+<body class="ps-loading">
+<div class="header--sidebar"></div>
+<header class="header">
+    <div th:include="~{index :: myheader}"></div>
+</header>
+<div class="header-services">
+    <div th:include="~{index :: myhdservices}"></div>
+</div>
+<main class="ps-main">
+    <div class="ps-products-wrap pt-80 pb-80" id="productlist">
+        <div class="ps-products" data-mh="product-listing">
+            <div class="ps-product-action">
+                <form class="layui-form" action="">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="font-size:25px;color:#626262"><b>价格</b></label>
+                        <div class="layui-input-inline">
+                            <select name="cname" lay-filter="setprices">
+                                <option th:title="0">默认</option>
+                                <option th:title="1">价格 (从低到高)</option>
+                                <option th:title="2">价格 (从高到低)</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="ps-product__columns">
+                <div class="layui-container" style="width:100%">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-md3" v-for="commodity in productlistData" :key="commodity.commid">
+                            <div class="ps-shoes--carousel">
+                                <div class="ps-shoe">
+                                    <div class="ps-shoe__thumbnail" th:switch="${session.num}">
+                                        <a class="ps-shoe__favorite" href="#"><i class="ps-icon-heart"></i></a>
+                                        <img v-bind:src="commodity.image" alt="商品主图" style="height:400px">
+                                        <a th:case="0" class="ps-shoe__overlay" :href="'/product-detail/'+commodity.commid+'/0'" target="_blank"></a>
+                                        <a th:case="1" class="ps-shoe__overlay" :href="'/product-detail/'+commodity.commid+'/1'" target="_blank"></a>
+                                        <a th:case="2" class="ps-shoe__overlay" :href="'/product-detail/'+commodity.commid+'/2'" target="_blank"></a>
+                                        <a th:case="3" class="ps-shoe__overlay" :href="'/product-detail/'+commodity.commid+'/3'" target="_blank"></a>
+                                        <a th:case="4" class="ps-shoe__overlay" :href="'/product-detail/'+commodity.commid+'/4'" target="_blank"></a>
+                                    </div>
+                                    <div class="ps-shoe__content">
+                                        <div class="ps-shoe__variants">
+                                            <div class="layui-col-md4" v-for="imgs in commodity.otherimg" :key="imgs.id">
+                                                <img v-bind:src="imgs" style="height:80px">
+                                            </div>
+                                        </div>
+                                        <div class="ps-shoe__detail" th:switch="${session.num}">
+                                            <p style="width:130px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">
+                                                <a th:case="0" class="ps-shoe__name" :href="'/product-detail/'+commodity.commid+'/0'">{{ commodity.commname }}</a>
+                                                <a th:case="1" class="ps-shoe__name" :href="'/product-detail/'+commodity.commid+'/1'">{{ commodity.commname }}</a>
+                                                <a th:case="2" class="ps-shoe__name" :href="'/product-detail/'+commodity.commid+'/2'">{{ commodity.commname }}</a>
+                                                <a th:case="3" class="ps-shoe__name" :href="'/product-detail/'+commodity.commid+'/3'">{{ commodity.commname }}</a>
+                                                <a th:case="4" class="ps-shoe__name" :href="'/product-detail/'+commodity.commid+'/4'">{{ commodity.commname }}</a>
+                                            </p>
+                                            <span class="ps-shoe__price">
+                                            <del> ￥ {{ commodity.orimoney }}</del> ￥ {{ commodity.thinkmoney }}
+                                        </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ps-product-action">
+                <div class="ps-pagination">
+                    <div id="layuipage"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ps-sidebar" data-mh="product-listing">
+            <aside class="ps-widget--sidebar ps-widget--category">
+                <div class="ps-widget__header">
+                    <h3>类别</h3>
+                </div>
+                <div class="ps-widget__content">
+                    <ul class="ps-list--checked">
+                        <li id="ac1" class="current" onclick="setcategory('全部','ac1');" style="cursor:pointer"><a>全部</a></li>
+                        <li id="ac2" onclick="setcategory('3C数码','ac2');" style="cursor:pointer"><a>3C数码</a></li>
+                        <li id="ac3" onclick="setcategory('书籍','ac3');" style="cursor:pointer"><a>书籍</a></li>
+                        <li id="ac4" onclick="setcategory('生活用品','ac4');" style="cursor:pointer"><a>生活用品</a></li>
+                        <li id="ac5" onclick="setcategory('服饰','ac5');" style="cursor:pointer"><a>服饰</a></li>
+                        <li id="ac6" onclick="setcategory('美妆','ac6');" style="cursor:pointer"><a>美妆</a></li>
+                        <li id="ac7" onclick="setcategory('出行','ac7');" style="cursor:pointer"><a>出行</a></li>
+                        <li id="ac8" onclick="setcategory('其他','ac8');" style="cursor:pointer"><a>其他</a></li>
+                    </ul>
+                </div>
+            </aside>
+            <aside class="ps-widget--sidebar ps-widget--filter">
+                <div class="ps-widget__header">
+                    <h3>价格</h3>
+                </div>
+                <div class="ps-widget__content">
+                    <div id="slideTest9" class="demo-slider"></div>
+                    <div id="test-slider-tips2" style="position:relative; left: 30px; margin-top: -10px;"></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+    <div class="ps-footer bg--cover" style="margin-top: 2000px" data-background="images/background/parallax.jpg">
+        <div class="ps-footer__content">
+            <div class="ps-container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 ">
+                        <aside class="ps-widget--footer ps-widget--info">
+                            <img th:src="@{/static/images/logo-grey.png}" alt="" style="height: 200px;margin-top: 15px;"></a>
+                        </aside>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 ">
+                        <aside class="ps-widget--footer ps-widget--info second">
+                            <header>
+                                <h3 class="ps-widget__title">办公地点</h3>
+                            </header>
+                            <footer>
+                                <p><strong>NeuSoft</strong></p>
+                                <p>Email: <a href='neusoft.edu.cn'>neusoft.edu.cn</a></p>
+                                <p>Phone: +86-411-84835000</p>
+                            </footer>
+                        </aside>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12 ">
+                        <aside class="ps-widget--footer ps-widget--link">
+                            <header>
+                                <h3 class="ps-widget__title">购物相关</h3>
+                            </header>
+                            <footer>
+                                <ul class="ps-list--link">
+                                    <li><a href="#">优惠劵</a></li>
+                                    <li><a href="#">投递邮箱</a></li>
+                                    <li><a href="#">网站反馈</a></li>
+                                    <li><a href="#">加入我们</a></li>
+                                </ul>
+                            </footer>
+                        </aside>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12 ">
+                        <aside class="ps-widget--footer ps-widget--link">
+                            <header>
+                                <h3 class="ps-widget__title">帮助</h3>
+                            </header>
+                            <footer>
+                                <ul class="ps-list--line">
+                                    <li><a href="#">订单状态</a></li>
+                                    <li><a href="#">购物与运送</a></li>
+                                    <li><a href="#">支付方式选择</a></li>
+                                    <li><a href="#">联系我们</a></li>
+                                </ul>
+                            </footer>
+                        </aside>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-12 ">
+                        <aside class="ps-widget--footer ps-widget--link">
+                            <header>
+                                <h3 class="ps-widget__title">产品主要涉及</h3>
+                            </header>
+                            <footer>
+                                <ul class="ps-list--line">
+                                    <li><a href="#">数码</a></li>
+                                    <li><a href="#">书籍</a></li>
+                                    <li><a href="#">生活用品</a></li>
+                                    <li><a href="#">服饰</a></li>
+                                </ul>
+                            </footer>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- JS Library-->
+<script type="text/javascript" th:src="@{/static/plugins/bootstrap/dist/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/jquery-bar-rating/dist/jquery.barrating.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/owl-carousel/owl.carousel.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/gmap3.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/imagesloaded.pkgd.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/isotope.pkgd.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/bootstrap-select/dist/js/bootstrap-select.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/jquery.matchHeight-min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/slick/slick/slick.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/elevatezoom/jquery.elevatezoom.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/Magnific-Popup/dist/jquery.magnific-popup.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/jquery-ui/jquery-ui.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/ditugoogle.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/revolution/js/jquery.themepunch.tools.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/revolution/js/jquery.themepunch.revolution.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/layui/layui.js}"></script>
+<script type="text/javascript"
+        th:src="@{/static/plugins/revolution/js/extensions/revolution.extension.video.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/static/plugins/revolution/js/extensions/revolution.extension.slideanims.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/static/plugins/revolution/js/extensions/revolution.extension.layeranimation.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/static/plugins/revolution/js/extensions/revolution.extension.navigation.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/static/plugins/revolution/js/extensions/revolution.extension.parallax.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/static/plugins/revolution/js/extensions/revolution.extension.actions.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/static/plugins/revolution/js/extensions/revolution.extension.kenburn.min.js}"></script>
+<script type="text/javascript"
+        th:src="@{/static/plugins/revolution/js/extensions/revolution.extension.migration.min.js}"></script>
+<!-- Custom scripts-->
+<script type="text/javascript" th:src="@{/static/js/main.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/common/product-listing.js}"></script>
+</body>
+</html>

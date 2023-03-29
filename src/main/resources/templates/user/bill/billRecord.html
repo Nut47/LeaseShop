@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ch">
+<head>
+    <base th:href="${#request.getScheme()}+'://'+${#request.getServerName()}+':'+${#request.getServerPort()}+${#request.getContextPath()}">
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售出记录</title>
+    <script th:src="@{/static/js/vue.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"/>
+    <script type="text/javascript" th:src="@{/static/plugins/jquery/dist/jquery.min.js}"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script type="application/javascript" th:src="@{/static/js/addressControl/jquery-1.9.1.min.js}"></script>
+    <script type="application/javascript" th:src="@{/static/js/addressControl/distpicker.data.js}"></script>
+    <script type="application/javascript" th:src="@{/static/js/addressControl/distpicker.js}"></script>
+    <script type="application/javascript" th:src="@{/static/js/addressControl/receiveAddress.js}"></script>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <script type="application/javascript" th:src="@{/static/js/vue.js}"></script>
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script th:inline="javascript">
+        let basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
+        function pay(count, id, num){
+            let name = document.getElementById("name"+count).innerHTML;
+            $.post("/zhiFuBao",{id:id,price:num,title:name},
+                function(data) {
+                    if(data =="OK"){
+                        alert("正在跳转支付页面，请扫码或账号登陆完成支付");
+                        window.location.href ="/finishPay";
+                    }else{
+                        alert("跳转支付失败，请检查订单信息");
+                        window.location.reload();
+                    }
+                }
+            );
+        }
+        function XUZU(a) {
+            var caozuo=document.getElementById("CaoZuo"+a);
+            var xuzu=document.getElementById("XuZu"+a);
+            var littlezhifu=document.getElementById("LittleZhiFu"+a);
+            caozuo.style.display="none";
+            littlezhifu.style.display="none";
+            xuzu.style.display="";
+        }
+        function QUXIAO(a) {
+            var caozuo=document.getElementById("CaoZuo"+a);
+            var xuzu=document.getElementById("XuZu"+a);
+            var littlezhifu=document.getElementById("LittleZhiFu"+a);
+            caozuo.style.display="";
+            xuzu.style.display="none";
+            littlezhifu.style.display="none";
+        }
+        var Feiyong;
+        var tianshu;
+        function QueRen(a,b) {
+            var caozuo=document.getElementById("CaoZuo"+a);
+            var xuzu=document.getElementById("XuZu"+a);
+            var littlezhifu=document.getElementById("LittleZhiFu"+a);
+            tianshu=document.getElementById("DayNum"+a).value;
+            feiyong=document.getElementById("FeiYong"+a);
+            caozuo.style.display="none";
+            xuzu.style.display="none";
+            littlezhifu.style.display="";
+            feiyong.innerHTML='需要支付：￥'+(b/20)*tianshu;
+            Feiyong=(b/20)*tianshu;
+        }
+        function GoToZhiFu(a,b,c,d,count,id,e) {
+            tianshu=document.getElementById("DayNum"+a).value;
+            let num = (e/20)*tianshu;
+            let name = document.getElementById("name"+count).innerHTML;
+            if(b+Feiyong>=c){
+                alert("已达到最大租赁消费，请前往支付界面填写收获地址");
+            }else {
+                $.post("/renewal",{number:Feiyong+b,leaseterm:parseFloat(tianshu) +d,billid:a},function(data){
+                    if(data == "OK"){
+                        $.post("/zhiFuBao",{id:id,price:num,title:name},
+                            function(data) {
+                                if(data =="OK"){
+                                    alert("正在跳转支付页面，请扫码或账号登陆完成支付");
+                                    window.location.href ="/finishPay";
+                                }else{
+                                    alert("跳转支付失败，请检查订单信息");
+                                    window.location.reload();
+                                }
+                            }
+                        );
+                    }
+                });
+            }
+        }
+        function DeLete(a){
+            if(a!=null){
+                $.post("/delete",{billid:parseInt(a)},function(data){
+                    if(data=="OK"){
+                        window.location.reload();
+                        alert("删除成功");
+                    }else {
+                        alert("删除失败");
+                    }
+                });
+            }else {
+                alert("数据出现错误，请联系工作人员");
+            }
+        }
+    </script>
+</head>
+<body style="margin:10px">
+<table class="layui-table"style="text-align: center">
+    <thead>
+    <tr>
+        <th style="width: 20px;text-align: center">序号</th>
+        <th style="width: 150px;text-align: center">名称</th>
+        <th style="width: 100px;text-align: center">套餐</th>
+        <th style="width: 600px;text-align: center">地址</th>
+        <th style="width: 50px;text-align: center">金额</th>
+        <th style="width: 80px;text-align: center">剩余时间</th>
+        <th style="width: 400px;text-align: center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="dept,stat:${newList}">
+        <div th:id="id+${stat.count}" th:text="${dept.billid}" style="visibility: hidden;height: 0px"></div>
+        <td th:text="${stat.count}"></td>
+        <td th:id="name+${stat.count}" th:text="${dept.commodityname}"></td>
+        <td th:id="name+${stat.count}" th:text="${dept.state}"></td>
+        <td th:text="${dept.address}"></td>
+        <td th:id="money+${stat.count}" th:text="${dept.number}"></td>
+        <td th:id="money+${stat.count}" th:text="${dept.stateBuy == '0' || dept.stateBuy == null}?${dept.leaseterm}+'天':''"></td>
+        <td>
+            <div th:id="'CaoZuo'+${dept.billid}" th:style="${dept.stateBuy == '0' || dept.stateBuy == null}?'':'display:none'">
+                <button  type="button" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal" style="border-radius: 5px;border: none;background-color: #27B574;" th:onclick="|pay(${stat.count},${dept.billid},${dept.number})|">付款</button>
+                <button  type="button" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger" style="border-radius: 5px;border: none;background-color: #27B574;color:white;"th:value="${dept.billid}"onclick="XUZU(this.value)">续租</button>
+                <button  type="button" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger" data-toggle="modal" data-target="#myModal" style="border-radius: 5px;border: none;background-color: #27B574;color:white;" th:onclick="|addadd(${dept.billid})|">收货地址</button>
+                <script>
+                    function addadd(billid){
+                        var bid=document.getElementById("bill_id");
+                        bid.value=billid;
+                    }
+                </script>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-danger" style="margin-left: 10px;border-radius: 5px;border: none;background-color: #27B574;color:white;"th:onclick="|DeLete(${dept.billid})|">取消订单</button>
+            </div>
+            <div th:style="${dept.stateBuy == '1'}?'':'display:none'">
+                <button  type="button" class="layui-btn layui-btn-lg layui-btn-radius layui-btn-normal" style="border-radius: 5px;border: none;background-color: #27B574;" >已购买</button>
+            </div>
+            <div th:id="'XuZu'+${dept.billid}" style="float: right;display: none;height: 60px;width: 300px;">
+                <input th:id="'DayNum'+${dept.billid}" type="text" value="" style="width: 120px;height: 30px;border-radius: 5px;border: 1px solid gray;outline: none;font-family: 华文楷体;font-size: 18px;float: left;margin-top: 10px;margin-left: 20px;"placeholder="请输入租期/天">
+                <button class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal" style="width: 60px;height: 33px;border-radius: 5px;border: none;background-color: #27B574;color: white;margin-top: 10px;float: left;margin-left: 5px;"th:onclick="|QueRen(${dept.billid},${dept.deposit})|">确定</button>
+                <button class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal" style="width: 60px;height: 33px;border-radius: 5px;border: none;background-color: #27B574;color: white;float: left;margin-top: 10px;margin-left: 5px;"th:value="${dept.billid}" onclick="QUXIAO(this.value)">取消</button>
+            </div>
+            <div th:id="'LittleZhiFu'+${dept.billid}" style="float: right;display: none;height: 60px;width: 350px;">
+                <span th:id="'FeiYong'+${dept.billid}" style="float: left;font-size: 17px;margin-top: 20px;margin-left: 5px;color:red;">需要支付：￥0.00</span>
+                <button class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal" style="width: 60px;height: 33px;border-radius: 5px;border: none;background-color: #27B574;color: white;margin-top: 10px;float: left;margin-left: 5px;"th:onclick="|GoToZhiFu(${dept.billid},${dept.number},${dept.totalprice},${dept.leaseterm},${stat.count},${dept.billid},${dept.deposit})|">确定</button>
+                <button class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal" style="width: 60px;height: 33px;border-radius: 5px;border: none;background-color: #27B574;color: white;float: left;margin-top: 10px;margin-left: 5px;"th:value="${dept.billid}" onclick="QUXIAO(this.value)">取消</button>
+            </div>
+        </td>
+    </tr>
+    <div class="modal fade" id="myModal">
+        <!--地址选择框-->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div>
+                    <!-- 模态框头部 -->
+                    <div class="modal-header">
+                        <h1 class="modal-title">新增地址 </h1>
+                    </div>
+                    <div class="modal-body" id="chAddress">
+                        <div >
+                            <div data-toggle="distpicker" >
+                                <div >
+                                    <input type="hidden" id="bill_id">
+                                    <span>省</span><br>
+                                    <select id="province" name="province" data-province="---- 选择省 ----"style="width: 250px;height: 35px;margin-top: 10px;border-radius: 5px;border: 1px solid gray;font-family: 华文楷体;font-size: 18px;"></select>
+                                </div>
+                                <div >
+                                    <span>市</span><br>
+                                    <select id="city" name="city" data-city="---- 选择市 ----"style="width: 250px;height: 35px;margin-top: 10px;border-radius: 5px;border: 1px solid gray;font-family: 华文楷体;font-size: 18px;"></select>
+                                </div>
+                                <div >
+                                    <span>区</span><br>
+                                    <select id="area" name="area" data-district="---- 选择区 ----"style="width: 250px;height: 35px;margin-top: 10px;border-radius: 5px;border: 1px solid gray;font-family: 华文楷体;font-size: 18px;"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="width: 100%;height: 100px;">
+                            <div style="height: 5px;"></div>
+                            <span style="margin-left: 20px;">详细地址</span><br>
+                            <input type="text" id="detail">
+                        </div>
+                    </div>
+                    <!-- 模态框底部 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="addAddress()">确认添加</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" >取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </tbody>
+</table>
+</body>
+<script>
+    $("#admitBtn").click(function() {
+        addAddress()
+    });
+    function addAddress() {
+        var billid=document.getElementById("bill_id").value;
+        var province=$("#province").val()
+        var city=$("#city").val()
+        var area=$("#area").val()
+        var detail=$("#detail").val()
+        $.post("/updateAddress",{billid:billid,province:province,city:city,area:area,detail:detail},function(data){
+            if(data=="OK"){
+                alert("地址修改成功！");
+                window.location.reload();
+            }else {
+                alert("fail update address");
+                window.location.reload();
+            }
+        });
+    }
+</script>
+</html>
